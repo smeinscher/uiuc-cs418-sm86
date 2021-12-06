@@ -34,23 +34,17 @@ uniform mat4 uModelViewMatrix;
 uniform mat3 uNormalMatrix;
 uniform mat4 uProjectionMatrix;
 
-out vec2 vTexCoord;
 out vec3 vNormal;
 out vec3 n, l, v, x;
-out vec3 e, n2;
 
 void main() {
-  e = normalize(vec3(uModelViewMatrix * vec4(aVertexPosition, 1.0)));
   n = normalize(uNormalMatrix*aVertexNormal);
-  n2 = normalize(uNormalMatrix * n);
 
   x = aVertexPosition;
   l = normalize(uNormalMatrix*vec3(1.0,0.25,0.0));
   vec4 p = uModelViewMatrix*vec4(aVertexPosition, 1.0);
   v = normalize(-p.xyz);
 
-  vTexCoord.s = aVertexPosition.x + 0.5;
-  vTexCoord.t = aVertexPosition.y + 0.5;
   gl_Position = uProjectionMatrix*uModelViewMatrix*vec4(aVertexPosition, 1.0);
 }
 `;
@@ -65,21 +59,14 @@ precision mediump float;
     
 const float PI = 3.14159265;
 
-in vec3 e, n2;
 in vec3 n, l, v, x;
 in vec3 vNormal;
-in vec2 vTexCoord;
 uniform sampler2D uSampler;
 uniform sampler2D uSampler2;
 
 out vec4 outColor;
     
 void main() {
-  vec3 r = reflect(e, n2);
-  float m = 2.0 * sqrt(pow(r.x, 2.0) + pow(r.y, 2.0) + pow(r.z + 1.0, 2.0));
-  vec2 vN = r.xy / m + 0.5;
-  //vec3 base = texture(uSampler2, vN).rgb;
-
   vec2 texCoord;
   texCoord.s = -atan(x.z, x.x) / (2.0 * PI);
   texCoord.t = 0.5 - 2.0 * -x.y;
